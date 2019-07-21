@@ -2,7 +2,6 @@ package euler
 
 import (
 	"fmt"
-	"strconv"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -28,37 +27,36 @@ func init() {
 
 func setOneCmdFlags() {
 	oneCmd.Flags().IntP("below", "b", 1000, "Number to count up to but not include")
-	oneCmd.Flags().StringSliceP("nums", "n", []string{"3", "5"}, "Numbers to be multiple of")
+	oneCmd.Flags().IntP("num1", "1", 3, "First num")
+	oneCmd.Flags().IntP("num2", "2", 5, "Second num")
 }
 
 func runOneCmd(cmd *cobra.Command, args []string) {
 	below := viper.GetInt("below")
-	numsStrs := viper.GetStringSlice("nums")
-	nums := make([]int, len(numsStrs))
-	for i, numsStr := range numsStrs {
-		num, err := strconv.Atoi(numsStr)
-		if err != nil || num < 0 {
-			log.Fatalf("'%s' is not a positive integer", numsStr)
-		}
-		nums[i] = num
-	}
+	num1 := viper.GetInt("num1")
+	num2 := viper.GetInt("num2")
 
-	fmt.Println(solve1(nums, below))
+	fmt.Println(solve1(num1, num2, below))
 }
 
-func solve1(nums []int, below int) int {
-	sum := 0
-	for i := 1; i < below; i++ {
-		divisible := false
-		for _, num := range nums {
-			if i%num == 0 {
-				divisible = true
-				break
-			}
-		}
-		if divisible {
-			sum += i
-		}
-	}
-	return sum
+func solve1(num1, num2, below int) int {
+	log.WithFields(log.Fields{
+		"num1": num1,
+		"num2": num2,
+		"below": below,
+	}).Debug("Starting solution...")
+
+	sum1 := sumSequence(num1, below)
+	sum2 := sumSequence(num2, below)
+	num3 := num1 * num2
+	sum3 := sumSequence(num3, below)
+	
+	return (sum1 + sum2 - sum3)
+}
+
+func sumSequence(increment, below int) int {
+	n := float64((below-1) / increment)
+	sum := (float64(increment) + n*float64(increment)) * n/2
+	log.Debugf("%d: n: %f %f, Sum: %f", increment, n, n/2, sum)
+	return int(sum)
 }
