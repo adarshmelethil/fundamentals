@@ -11,4 +11,7 @@ func AddSubCommands(parent *cobra.Command) {
 
   setTwoCmdFlags()
   parent.AddCommand(twoCmd)
+
+  setTwentyFiveFlags()
+  parent.AddCommand(twentyFiveCmd)
 }
